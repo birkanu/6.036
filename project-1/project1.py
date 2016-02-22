@@ -33,7 +33,13 @@ def hinge_loss(feature_matrix, labels, theta, theta_0):
     given dataset and parameters. This number should be the average hinge
     loss across all of the points in the feature matrix.
     """
-    raise NotImplementedError
+    x = feature_matrix
+    y = labels
+    data_point_count = x.shape[0]
+    total_hinge_loss = 0.0
+    for i in range(data_point_count):
+        total_hinge_loss += max(0, 1 - (y[i] * (np.dot(theta, x[i]) + theta_0)))
+    return (total_hinge_loss / data_point_count);
 
 def perceptron_single_step_update(feature_vector, label, current_theta, current_theta_0):
     """
@@ -54,7 +60,14 @@ def perceptron_single_step_update(feature_vector, label, current_theta, current_
     real valued number with the value of theta_0 after the current updated has
     completed.
     """
-    raise NotImplementedError
+    x_i = feature_vector
+    y_i = label
+    new_theta = current_theta
+    new_theta_0 = current_theta_0
+    if ((y_i * (np.dot(current_theta, x_i) + current_theta_0)) <= 0):
+        new_theta = current_theta + np.dot(y_i, x_i) 
+        new_theta_0 = current_theta_0 + y_i
+    return (new_theta, new_theta_0)
 
 def perceptron(feature_matrix, labels, T):
     """
@@ -80,7 +93,18 @@ def perceptron(feature_matrix, labels, T):
     theta_0, the offset classification parameter, after T iterations through
     the feature matrix.
     """
-    raise NotImplementedError
+    x = feature_matrix
+    y = labels
+    feature_matrix_size = x.shape
+    data_point_count = feature_matrix_size[0]
+    theta = np.zeros(feature_matrix_size[1])
+    theta_0 = 0.0
+    for iteration in range(T):
+        for i in range(data_point_count):
+            perceptron_single_step_update_results = perceptron_single_step_update(x[i], y[i], theta, theta_0)
+            theta = perceptron_single_step_update_results[0]
+            theta_0 = perceptron_single_step_update_results[1]
+    return (theta, theta_0)
 
 def passive_aggressive_single_step_update(feature_vector, label, L, current_theta, current_theta_0):
     """
@@ -103,7 +127,13 @@ def passive_aggressive_single_step_update(feature_vector, label, L, current_thet
     real valued number with the value of theta_0 after the current updated has
     completed.
     """
-    raise NotImplementedError
+    x_i = feature_vector
+    y_i = label
+    hinge_loss = max(0, 1 - (y_i * (np.dot(current_theta, x_i) + current_theta_0)))
+    eta = min((1.0 / L), hinge_loss / (np.dot(x_i, x_i)))
+    new_theta = current_theta + (eta * (np.dot(y_i, x_i))) 
+    new_theta_0 = current_theta_0 + (eta * y_i)
+    return (new_theta, new_theta_0)
 
 def average_perceptron(feature_matrix, labels, T):
     """
@@ -132,7 +162,24 @@ def average_perceptron(feature_matrix, labels, T):
     Hint: It is difficult to keep a running average; however, it is simple to
     find a sum and divide.
     """
-    raise NotImplementedError
+    x = feature_matrix
+    y = labels
+    feature_matrix_size = x.shape
+    data_point_count = feature_matrix_size[0]
+    theta = np.zeros(feature_matrix_size[1])
+    theta_0 = 0.0
+    total_theta = theta
+    total_theta_0 = theta_0
+    c = 0 
+    for iteration in range(T):
+        for i in range(data_point_count):
+            perceptron_single_step_update_results = perceptron_single_step_update(x[i], y[i], theta, theta_0)
+            theta = perceptron_single_step_update_results[0]
+            theta_0 = perceptron_single_step_update_results[1]
+            total_theta = np.add(total_theta, theta)
+            total_theta_0 = np.add(total_theta_0, theta_0)
+            c += 1
+    return (total_theta / c, total_theta_0 / c)
 
 def average_passive_aggressive(feature_matrix, labels, T, L):
     """
@@ -163,7 +210,24 @@ def average_passive_aggressive(feature_matrix, labels, T, L):
     Hint: It is difficult to keep a running average; however, it is simple to
     find a sum and divide.
     """
-    raise NotImplementedError
+    x = feature_matrix
+    y = labels
+    feature_matrix_size = x.shape
+    data_point_count = feature_matrix_size[0]
+    theta = np.zeros(feature_matrix_size[1])
+    theta_0 = 0.0
+    total_theta = theta
+    total_theta_0 = theta_0
+    c = 0 
+    for iteration in range(T):
+        for i in range(data_point_count):
+            passive_aggressive_single_step_update_results = passive_aggressive_single_step_update(x[i], y[i], L, theta, theta_0)
+            theta = passive_aggressive_single_step_update_results[0]
+            theta_0 = passive_aggressive_single_step_update_results[1]
+            total_theta = np.add(total_theta, theta)
+            total_theta_0 = np.add(total_theta_0, theta_0)
+            c += 1
+    return (total_theta / c, total_theta_0 / c)
 
 ### Part II
 

@@ -1,4 +1,5 @@
 import project1 as p1
+import numpy as np
 import utils
 
 #-------------------------------------------------------------------------------
@@ -22,21 +23,21 @@ test_bow_features = p1.extract_bow_feature_vectors(test_texts, dictionary)
 #-------------------------------------------------------------------------------
 # Section 1.7
 #-------------------------------------------------------------------------------
-# toy_features, toy_labels = toy_data = utils.load_toy_data('toy_data.tsv')
-#
-# T = 5
-# L = 10
-#
-# thetas_perceptron = p1.perceptron(toy_features, toy_labels, T)
-# thetas_avg_perceptron = p1.average_perceptron(toy_features, toy_labels, T)
-# thetas_avg_pa = p1.average_passive_aggressive(toy_features, toy_labels, T, L)
-#
-# def plot_toy_results(algo_name, thetas):
-#     utils.plot_toy_data(algo_name, toy_features, toy_labels, thetas)
-#
-# plot_toy_results('Perceptron', thetas_perceptron)
-# plot_toy_results('Average Perceptron', thetas_avg_perceptron)
-# plot_toy_results('Average Passive-Aggressive', thetas_avg_pa)
+toy_features, toy_labels = toy_data = utils.load_toy_data('toy_data.tsv')
+
+T = 5
+L = 10
+
+thetas_perceptron = p1.perceptron(toy_features, toy_labels, T)
+thetas_avg_perceptron = p1.average_perceptron(toy_features, toy_labels, T)
+thetas_avg_pa = p1.average_passive_aggressive(toy_features, toy_labels, T, L)
+
+def plot_toy_results(algo_name, thetas):
+    utils.plot_toy_data(algo_name, toy_features, toy_labels, thetas)
+
+plot_toy_results('Perceptron', thetas_perceptron)
+plot_toy_results('Average Perceptron', thetas_avg_perceptron)
+plot_toy_results('Average Passive-Aggressive', thetas_avg_pa)
 #-------------------------------------------------------------------------------
 #
 #
