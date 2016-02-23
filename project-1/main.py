@@ -23,21 +23,21 @@ test_bow_features = p1.extract_bow_feature_vectors(test_texts, dictionary)
 #-------------------------------------------------------------------------------
 # Section 1.7
 #-------------------------------------------------------------------------------
-toy_features, toy_labels = toy_data = utils.load_toy_data('toy_data.tsv')
+# toy_features, toy_labels = toy_data = utils.load_toy_data('toy_data.tsv')
 
-T = 5
-L = 10
+# T = 5
+# L = 10
 
-thetas_perceptron = p1.perceptron(toy_features, toy_labels, T)
-thetas_avg_perceptron = p1.average_perceptron(toy_features, toy_labels, T)
-thetas_avg_pa = p1.average_passive_aggressive(toy_features, toy_labels, T, L)
+# thetas_perceptron = p1.perceptron(toy_features, toy_labels, T)
+# thetas_avg_perceptron = p1.average_perceptron(toy_features, toy_labels, T)
+# thetas_avg_pa = p1.average_passive_aggressive(toy_features, toy_labels, T, L)
 
-def plot_toy_results(algo_name, thetas):
-    utils.plot_toy_data(algo_name, toy_features, toy_labels, thetas)
+# def plot_toy_results(algo_name, thetas):
+#     utils.plot_toy_data(algo_name, toy_features, toy_labels, thetas)
 
-plot_toy_results('Perceptron', thetas_perceptron)
-plot_toy_results('Average Perceptron', thetas_avg_perceptron)
-plot_toy_results('Average Passive-Aggressive', thetas_avg_pa)
+# plot_toy_results('Perceptron', thetas_perceptron)
+# plot_toy_results('Average Perceptron', thetas_avg_perceptron)
+# plot_toy_results('Average Passive-Aggressive', thetas_avg_pa)
 #-------------------------------------------------------------------------------
 #
 #
@@ -46,17 +46,17 @@ plot_toy_results('Average Passive-Aggressive', thetas_avg_pa)
 #-------------------------------------------------------------------------------
 # T = 5
 # L = 1
-#
+
 # pct_train_accuracy, pct_val_accuracy = \
 #    p1.perceptron_accuracy(train_bow_features,val_bow_features,train_labels,val_labels,T=T)
 # print("{:35} {:.4f}".format("Training accuracy for perceptron:", pct_train_accuracy))
 # print("{:35} {:.4f}".format("Validation accuracy for perceptron:", pct_val_accuracy))
-#
+
 # avg_pct_train_accuracy, avg_pct_val_accuracy = \
 #    p1.average_perceptron_accuracy(train_bow_features,val_bow_features,train_labels,val_labels,T=T)
 # print("{:43} {:.4f}".format("Training accuracy for average perceptron:", avg_pct_train_accuracy))
 # print("{:43} {:.4f}".format("Validation accuracy for average perceptron:", avg_pct_val_accuracy))
-#
+
 # avg_pa_train_accuracy, avg_pa_val_accuracy = \
 #    p1.average_passive_aggressive_accuracy(train_bow_features,val_bow_features,train_labels,val_labels,T=T,L=L)
 # print("{:50} {:.4f}".format("Training accuracy for average passive-aggressive:", avg_pa_train_accuracy))
@@ -68,21 +68,31 @@ plot_toy_results('Average Passive-Aggressive', thetas_avg_pa)
 # Section 2.10
 #-------------------------------------------------------------------------------
 # data = (train_bow_features, train_labels, val_bow_features, val_labels)
-#
+
 # # values of T and lambda to try
-# Ts = []
-# Ls = []
-#
+# Ts = [1, 5, 10, 15, 20]
+# Ls = [1, 10, 20, 50, 100]
+
 # pct_tune_results = utils.tune_perceptron(Ts, *data)
+# print "Perceptron Training Accuracies: " + str(pct_tune_results[0])
+# print "Perceptron Validation Accuracies: " + str(pct_tune_results[1])
+# print "\n"
 # avg_pct_tune_results = utils.tune_avg_perceptron(Ts, *data)
-#
+# print "Average Perceptron Training Accuracies: " + str(avg_pct_tune_results[0])
+# print "Average Perceptron Validation Accuracies: " + str(avg_pct_tune_results[1])
+# print "\n"
 # # fix values for L and T while tuning passive-aggressive T and L, respective
-# best_L = 0
-# best_T = 1
-#
+# best_L = 20
+# best_T = 5
+
 # avg_pa_tune_results_T = utils.tune_passive_aggressive_T(best_L, Ts, *data)
 # avg_pa_tune_results_L = utils.tune_passive_aggressive_L(best_T, Ls, *data)
-#
+# print "Average Passive-Aggressive Training Accuracies with Best L: " + str(avg_pa_tune_results_T[0])
+# print "Average Passive-Aggressive Validation Accuracies with Best L: " + str(avg_pa_tune_results_T[1])
+# print "\n"
+# print "Average Passive-Aggressive Training Accuracies with Best T: " + str(avg_pa_tune_results_L[0])
+# print "Average Passive-Aggressive Validation Accuracies with Best T: " + str(avg_pa_tune_results_L[1])
+
 # utils.plot_tune_results('Perceptron', 'T', Ts, *pct_tune_results)
 # utils.plot_tune_results('Avg Perceptron', 'T', Ts, *avg_pct_tune_results)
 # utils.plot_tune_results('Avg Passive-Aggressive', 'T', Ts, *avg_pa_tune_results_T)
@@ -96,7 +106,10 @@ plot_toy_results('Average Passive-Aggressive', thetas_avg_pa)
 # the hyperparameter and accuracy of your best classifier on the test data.
 # The test data has been provided as test_bow_features and test_labels.
 #-------------------------------------------------------------------------------
-# pass
+# L = 20
+# T = 5
+# accuracy = p1.average_passive_aggressive_accuracy(train_bow_features, test_bow_features, train_labels, test_labels, 5, 20)
+# print accuracy
 #-------------------------------------------------------------------------------
 #
 #-------------------------------------------------------------------------------
@@ -105,11 +118,13 @@ plot_toy_results('Average Passive-Aggressive', thetas_avg_pa)
 # Assign to best_theta, the weights (and not the bias!) learned by your most
 # accurate algorithm with the optimal choice of hyperparameters.
 #-------------------------------------------------------------------------------
-# best_theta = None
-# wordlist   = [word for (idx, word) in sorted(zip(dictionary.values(), dictionary.keys()))]
-# sorted_word_features = utils.most_explanatory_word(best_theta, wordlist)
-# print("Most Explanatory Word Features")
-# print(sorted_word_features[:10])
+L = 20
+T = 5
+best_theta = p1.average_passive_aggressive(train_bow_features, train_labels, T, L)[0]
+wordlist   = [word for (idx, word) in sorted(zip(dictionary.values(), dictionary.keys()))]
+sorted_word_features = utils.most_explanatory_word(best_theta, wordlist)
+print("Most Explanatory Word Features")
+print(sorted_word_features[:10])
 #-------------------------------------------------------------------------------
 #
 #-------------------------------------------------------------------------------
