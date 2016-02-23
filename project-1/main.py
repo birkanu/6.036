@@ -118,13 +118,13 @@ test_bow_features = p1.extract_bow_feature_vectors(test_texts, dictionary)
 # Assign to best_theta, the weights (and not the bias!) learned by your most
 # accurate algorithm with the optimal choice of hyperparameters.
 #-------------------------------------------------------------------------------
-L = 20
-T = 5
-best_theta = p1.average_passive_aggressive(train_bow_features, train_labels, T, L)[0]
-wordlist   = [word for (idx, word) in sorted(zip(dictionary.values(), dictionary.keys()))]
-sorted_word_features = utils.most_explanatory_word(best_theta, wordlist)
-print("Most Explanatory Word Features")
-print(sorted_word_features[:10])
+# L = 20
+# T = 5
+# best_theta = p1.average_passive_aggressive(train_bow_features, train_labels, T, L)[0]
+# wordlist   = [word for (idx, word) in sorted(zip(dictionary.values(), dictionary.keys()))]
+# sorted_word_features = utils.most_explanatory_word(best_theta, wordlist)
+# print("Most Explanatory Word Features")
+# print(sorted_word_features[:10])
 #-------------------------------------------------------------------------------
 #
 #-------------------------------------------------------------------------------
@@ -136,11 +136,40 @@ print(sorted_word_features[:10])
 # When you are satisfied with your features, evaluate their accuracy on the test
 # set using the same procedure as in section 2.11a.
 #-------------------------------------------------------------------------------
-# dictionary = p1.bag_of_words(train_texts)
-#
-# train_final_features = p1.extract_final_features(train_texts, dictionary)
-# val_final_features   = p1.extract_final_features(val_texts, dictionary)
-# test_final_features  = p1.extract_final_features(test_texts, dictionary)
+dictionary = p1.bag_of_words(train_texts)
+
+train_final_features = p1.extract_final_features(train_texts, dictionary)
+val_final_features   = p1.extract_final_features(val_texts, dictionary)
+test_final_features  = p1.extract_final_features(test_texts, dictionary)
+
+# data = (train_final_features, train_labels, val_final_features , val_labels)
+
+# Ts = [1, 5, 10, 15, 20]
+# Ls = [1, 10, 20, 50, 100]
+
+# pct_tune_results = utils.tune_perceptron(Ts, *data)
+# print "Perceptron Training Accuracies: " + str(pct_tune_results[0])
+# print "Perceptron Validation Accuracies: " + str(pct_tune_results[1])
+# print "\n"
+# avg_pct_tune_results = utils.tune_avg_perceptron(Ts, *data)
+# print "Average Perceptron Training Accuracies: " + str(avg_pct_tune_results[0])
+# print "Average Perceptron Validation Accuracies: " + str(avg_pct_tune_results[1])
+# print "\n"
+
+# best_L = 20
+# best_T = 5
+
+# avg_pa_tune_results_T = utils.tune_passive_aggressive_T(best_L, Ts, *data)
+# avg_pa_tune_results_L = utils.tune_passive_aggressive_L(best_T, Ls, *data)
+# print "Average Passive-Aggressive Training Accuracies with Best L: " + str(avg_pa_tune_results_T[0])
+# print "Average Passive-Aggressive Validation Accuracies with Best L: " + str(avg_pa_tune_results_T[1])
+# print "\n"
+# print "Average Passive-Aggressive Training Accuracies with Best T: " + str(avg_pa_tune_results_L[0])
+# print "Average Passive-Aggressive Validation Accuracies with Best T: " + str(avg_pa_tune_results_L[1])
+
+accuracy = p1.average_passive_aggressive_accuracy(train_final_features, test_final_features, train_labels, test_labels, 5, 20)
+print accuracy
+
 #-------------------------------------------------------------------------------
 #
 #-------------------------------------------------------------------------------

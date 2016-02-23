@@ -1,4 +1,5 @@
 from string import punctuation, digits
+from sets import Set
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -378,11 +379,15 @@ def bag_of_words(texts):
 
     Feel free to change this code as guided by Section 3 (e.g. remove stopwords, add bigrams etc.)
     """
+    # Create a set of stopwords
+    stopwords = open("stopwords.txt").read().splitlines();
+    stopwords = Set(stopwords)
     dictionary = {} # maps word to unique index
     for text in texts:
         word_list = extract_words(text)
         for word in word_list:
-            if word not in dictionary:
+            # Only add into dictionary if the word is not in stopwords
+            if word not in dictionary and word not in stopwords:
                 dictionary[word] = len(dictionary)
     return dictionary
 
@@ -403,6 +408,7 @@ def extract_bow_feature_vectors(reviews, dictionary):
         for word in word_list:
             if word in dictionary:
                 feature_matrix[i, dictionary[word]] = 1
+                # feature_matrix[i, dictionary[word]] += 1
     return feature_matrix
 
 def extract_additional_features(reviews):
