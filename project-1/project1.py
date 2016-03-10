@@ -1,4 +1,5 @@
 from string import punctuation, digits
+from sets import Set
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -38,7 +39,7 @@ def hinge_loss(feature_matrix, labels, theta, theta_0):
     data_point_count = x.shape[0]
     total_hinge_loss = 0.0
     for i in range(data_point_count):
-        total_hinge_loss += max(0, 1 - (y[i] * (np.dot(theta, x[i]) + theta_0)))
+        total_hinge_loss += max(0.0, 1 - (y[i] * (np.dot(theta, x[i]) + theta_0)))
     return (total_hinge_loss / data_point_count);
 
 def perceptron_single_step_update(feature_vector, label, current_theta, current_theta_0):
@@ -65,7 +66,7 @@ def perceptron_single_step_update(feature_vector, label, current_theta, current_
     new_theta = current_theta
     new_theta_0 = current_theta_0
     if ((y_i * (np.dot(current_theta, x_i) + current_theta_0)) <= 0):
-        new_theta = current_theta + np.dot(y_i, x_i) 
+        new_theta = current_theta + np.dot(y_i, x_i)
         new_theta_0 = current_theta_0 + y_i
     return (new_theta, new_theta_0)
 
@@ -129,9 +130,12 @@ def passive_aggressive_single_step_update(feature_vector, label, L, current_thet
     """
     x_i = feature_vector
     y_i = label
-    hinge_loss = max(0, 1 - (y_i * (np.dot(current_theta, x_i) + current_theta_0)))
+    # Note that I could call the hinge_loss function implemented above here as:
+    # loss = hinge_loss(np.array([x_i]), np.array([y_i]), current_theta, current_theta_0)
+    # However, I'm not using it since it runs much slower because of the for loop.
+    hinge_loss = max(0.0, 1 - (y_i * (np.dot(current_theta, x_i) + current_theta_0)))
     eta = min((1.0 / L), hinge_loss / (np.dot(x_i, x_i)))
-    new_theta = current_theta + (eta * (np.dot(y_i, x_i))) 
+    new_theta = current_theta + (eta * (np.dot(y_i, x_i)))
     new_theta_0 = current_theta_0 + (eta * y_i)
     return (new_theta, new_theta_0)
 
@@ -170,7 +174,7 @@ def average_perceptron(feature_matrix, labels, T):
     theta_0 = 0.0
     total_theta = theta
     total_theta_0 = theta_0
-    c = 0 
+    c = 0
     for iteration in range(T):
         for i in range(data_point_count):
             perceptron_single_step_update_results = perceptron_single_step_update(x[i], y[i], theta, theta_0)
@@ -218,7 +222,7 @@ def average_passive_aggressive(feature_matrix, labels, T, L):
     theta_0 = 0.0
     total_theta = theta
     total_theta_0 = theta_0
-    c = 0 
+    c = 0
     for iteration in range(T):
         for i in range(data_point_count):
             passive_aggressive_single_step_update_results = passive_aggressive_single_step_update(x[i], y[i], L, theta, theta_0)
@@ -248,7 +252,15 @@ def classify(feature_matrix, theta, theta_0):
     classification of the kth row of the feature matrix using the given theta
     and theta_0.
     """
-    raise NotImplementedError
+    x = feature_matrix
+    data_point_count = x.shape[0]
+    labels = []
+    for i in range(data_point_count):
+        if ((np.dot(theta, x[i]) + theta_0) <= 0):
+            labels.append(-1)
+        else:
+            labels.append(1)
+    return np.array(labels)
 
 def perceptron_accuracy(train_feature_matrix, val_feature_matrix, train_labels, val_labels, T):
     """
@@ -274,7 +286,12 @@ def perceptron_accuracy(train_feature_matrix, val_feature_matrix, train_labels, 
     trained classifier on the training data and the second element is the accuracy
     of the trained classifier on the validation data.
     """
-    raise NotImplementedError
+    theta, theta_0 = perceptron(train_feature_matrix, train_labels, T)
+    train_predictions = classify(train_feature_matrix, theta, theta_0)
+    val_predictions = classify(val_feature_matrix, theta, theta_0)
+    train_accuracy = accuracy(train_predictions, train_labels)
+    val_accuracy = accuracy(val_predictions, val_labels)
+    return (train_accuracy, val_accuracy)
 
 def average_perceptron_accuracy(train_feature_matrix, val_feature_matrix, train_labels, val_labels, T):
     """
@@ -301,7 +318,12 @@ def average_perceptron_accuracy(train_feature_matrix, val_feature_matrix, train_
     trained classifier on the training data and the second element is the accuracy
     of the trained classifier on the validation data.
     """
-    raise NotImplementedError
+    theta, theta_0 = average_perceptron(train_feature_matrix, train_labels, T)
+    train_predictions = classify(train_feature_matrix, theta, theta_0)
+    val_predictions = classify(val_feature_matrix, theta, theta_0)
+    train_accuracy = accuracy(train_predictions, train_labels)
+    val_accuracy = accuracy(val_predictions, val_labels)
+    return (train_accuracy, val_accuracy)
 
 def average_passive_aggressive_accuracy(train_feature_matrix, val_feature_matrix, train_labels, val_labels, T, L):
     """
@@ -331,7 +353,12 @@ def average_passive_aggressive_accuracy(train_feature_matrix, val_feature_matrix
     trained classifier on the training data and the second element is the accuracy
     of the trained classifier on the validation data.
     """
-    raise NotImplementedError
+    theta, theta_0 = average_passive_aggressive(train_feature_matrix, train_labels, T, L)
+    train_predictions = classify(train_feature_matrix, theta, theta_0)
+    val_predictions = classify(val_feature_matrix, theta, theta_0)
+    train_accuracy = accuracy(train_predictions, train_labels)
+    val_accuracy = accuracy(val_predictions, val_labels)
+    return (train_accuracy, val_accuracy)
 
 def extract_words(input_string):
     """
@@ -352,11 +379,15 @@ def bag_of_words(texts):
 
     Feel free to change this code as guided by Section 3 (e.g. remove stopwords, add bigrams etc.)
     """
+    # Create a set of stopwords
+    stopwords = open("stopwords.txt").read().splitlines();
+    stopwords = Set(stopwords)
     dictionary = {} # maps word to unique index
     for text in texts:
         word_list = extract_words(text)
         for word in word_list:
-            if word not in dictionary:
+            # Only add into dictionary if the word is not in stopwords
+            if word not in dictionary and word not in stopwords:
                 dictionary[word] = len(dictionary)
     return dictionary
 
@@ -377,6 +408,7 @@ def extract_bow_feature_vectors(reviews, dictionary):
         for word in word_list:
             if word in dictionary:
                 feature_matrix[i, dictionary[word]] = 1
+                # feature_matrix[i, dictionary[word]] += 1
     return feature_matrix
 
 def extract_additional_features(reviews):
