@@ -18,8 +18,8 @@ def runSoftmaxOnMNIST():
     testError = computeTestError(testX, testY, theta)
     writePickleData(theta, "./theta.pkl.gz")  # Save the model parameters theta obtained from calling softmaxRegression to disk.
     return testError
-
-print 'testError =', runSoftmaxOnMNIST() # Don't run this until softmax regression has been fully implemented.
+print runSoftmaxOnMNIST()
+# print 'testError =', runSoftmaxOnMNIST() # Don't run this until softmax regression has been fully implemented.
 
 
 ######################################################
