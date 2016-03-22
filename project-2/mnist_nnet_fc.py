@@ -24,7 +24,7 @@ y_test = np_utils.to_categorical(y_test, num_classes)
 model = Sequential()
 
 ## Add a fully-connected layer with 128 neurons. The input dim is 784 which is the size of the pixels in one image
-model.add(Dense(output_dim=128, input_dim=784))
+model.add(Dense(output_dim=1024, input_dim=784))
 
 ## Add rectifier activation function to each neuron
 model.add(Activation("relu"))
@@ -38,7 +38,7 @@ model.add(Activation("softmax"))
 ##################################
 
 ## Compile the model with categorical_crossentrotry as the loss, and stochastic gradient descent (learning rate=0.001, momentum=0.5,as the optimizer)
-model.compile(loss='categorical_crossentropy', optimizer=SGD(lr=0.001, momentum=0.5))
+model.compile(loss='categorical_crossentropy', optimizer=SGD(lr=0.1, momentum=0.5))
 
 ## Fit the model (10% of training data used as validation set)
 model.fit(X_train, y_train, nb_epoch=10, batch_size=32,validation_split=0.1, show_accuracy=True)

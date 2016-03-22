@@ -11,16 +11,9 @@ import matplotlib.pyplot as plt
 # this function returns a new data array in which each sample in X 
 # has been projected onto the first n_components principcal components.
 def projectOntoPC(X, pcs, n_components):
-    # TODO: first center data using the centerData() function.
-    # TODO: Return the projection of the centered dataset 
-    #       on the first n_components principal components.
-    #       This should be an array with dimensions: n x n_components.
-    # Hint: these principal components = first n_components columns 
-    #       of the eigenvectors returned by PrincipalComponents().
-    #       Note that each eigenvector is already be a unit-vector,
-    #       so the projection may be done using matrix multiplication.
-    return None # TODO: remove this.
-
+    centeredData = centerData(X)
+    V = pcs[:,range(n_components)]
+    return np.dot(centeredData, V)
 
 # Returns a new dataset with features given by the mapping 
 # which corresponds to the quadratic kernel.
@@ -33,14 +26,15 @@ def quadraticFeatures(X):
         for k in range(j,d+1):
             new_d += 1
     newData = np.zeros((n, new_d))
-    # TODO: Fill in matrix newData with the correct values given by mapping 
-    #       each original sample into the feature space of the quadratic kernel.
-    #       Note that newData should have the same number of rows as X, where each
-    #       row corresponds to a sample, and the dimensionality of newData has 
-    #       already been set to the appropriate value for the quadratic kernel feature mapping.
+    for i in range(n):
+        idx = 0
+        for j in range(d+1):
+            newData[i, idx] = np.square(X_withones[i,j])
+            idx += 1
+            for k in range(j+1, d+1):
+                newData[i, idx] = np.sqrt(2) * X_withones[i,j] * X_withones[i,k]
+                idx += 1
     return newData
-
-
 
 ### Functions which are already complete, for you to use ###
 
@@ -49,7 +43,6 @@ def quadraticFeatures(X):
 def centerData(X):
     featureMeans = X.mean(axis = 0)
     return(X - featureMeans)
-
 
 # Returns the principal component vectors of the data,
 # sorted in decreasing order of eigenvalue magnitude.
@@ -62,7 +55,6 @@ def principalComponents(X):
     eigenValues = eigenValues[idx]
     eigenVectors = eigenVectors[:,idx]
     return eigenVectors
-
 
 # Given the principal component vectors as the columns of matrix pcs,  
 # this function projects each sample in X onto the first two principal components
@@ -78,7 +70,6 @@ def plotPC(X, pcs, labels):
     ax.set_xlabel('PC 1')
     ax.set_ylabel('PC 2')
     plt.show(block=True)
-
 
 # Given the principal component vectors as the columns of matrix pcs,  
 # this function reconstructs a single image 
