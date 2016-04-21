@@ -24,7 +24,7 @@ y_test = np_utils.to_categorical(y_test, num_classes)
 model = Sequential()
 
 ## Add a fully-connected layer with 128 neurons. The input dim is 784 which is the size of the pixels in one image
-model.add(Dense(output_dim=1024, input_dim=784))
+model.add(Dense(output_dim=512, input_dim=784))
 
 ## Add rectifier activation function to each neuron
 model.add(Activation("relu"))
